@@ -1,0 +1,9 @@
+sudo -u postgres createuser max
+# ^this line makes a user named max in the postgres db cluster
+# The next line imports a postgres backup from a dump file
+pg_restore -d max -1 budget_backup.sql
+
+
+
+
+Notes - The way I'm using psycopg to compose SQL strings leaves it open to SQL injection - yay!

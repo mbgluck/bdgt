@@ -1,0 +1,83 @@
+
+{% extends 'base.html' %}
+
+{% block head %}
+    <script src="{{ url_for('static', filename='js/jquery.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/StagedChange.js') }}"></script>
+{% endblock %}
+
+{% block body %}
+<br><a href="{{ url_for('stage_import_home') }}">Return to process other uploads</a>
+
+<br>
+<h1>{{staged.file_name}}</h1>
+<p>Account: {{staged.account_name}}, Currency: {{staged.currency}}</p>
+<p>Total with input: {{ staged.stat_validation_total }}</p>
+<p>There are {{ staged.rows_inactive }} rows that are duplicates and will not be uploaded</p>
+<p>Batch ID: {{ staged.batch_id }}</p>
+
+<table>
+    <tr>
+        {% for col in staged.staged_trans.columns.values %}
+        <th>{{ col_names[col] }}</th>
+        {% endfor %}
+    </tr>
+    {% for i, row in staged.staged_trans.iterrows() %}
+    <tr>
+        {# si is the index of the series #}
+        {% for si, d in row.iteritems() %}
+            {% if si == 'charge_type_id' %}
+            <td>
+                <form method="POST" name="charge_type">
+                    <input type="hidden" id="batch_id" name="batch_id" value="{{ staged.batch_id }}">
+                    <input type="hidden" id="form_type" name="form_type" value="charge_type">
+                    <input type="hidden" id="row_index" name="row_index" value="{{ i }}">
+                    {{ ct_form.csrf_token }}
+                    {# below line sets the sleected value if it exists #}
+                    {% set x = ct_form.chargeType.process_data(d) %}
+                    {{ ct_form.chargeType(id= 'charge_type' ~i) }}
+                </form>
+            </td>
+            {% elif si == 'charge_category_id' %}
+            <td>
+                <form method="POST" name="charge_category">
+                    <input type="hidden" id="batch_id" name="batch_id" value="{{ staged.batch_id }}">
+                    <input type="hidden" id="form_type" name="form_type" value="charge_category">
+                    <input type="hidden" id="row_index" name="row_index" value="{{ i }}">
+                    {{ cc_form.csrf_token }}
+                    {% set x = cc_form.chargeCategory.process_data(d) %}
+                    {{ cc_form.chargeCategory(id= 'charge_category' ~i,  tabindex='-1') }}
+                </form>
+            </td>
+            {% elif si == 'charge_tracking_type_id' %}
+            <td>
+                <form method="POST" name="tracking_type">
+                    <input type="hidden" id="batch_id" name="batch_id" value="{{ staged.batch_id }}">
+                    <input type="hidden" id="form_type" name="form_type" value="tracking_type">
+                    <input type="hidden" id="row_index" name="row_index" value="{{ i }}">
+                    {{ tt_form.csrf_token }}
+                    {% set x = tt_form.trackingType.process_data(d) %}
+                    {{ tt_form.trackingType(id= 'tracking_type' ~i, tabindex='-1') }}
+                </form>
+            </td>
+            {% elif si == 'note' %}
+            <td>
+                <form method="POST" name="note">
+                    <input type="hidden" id="batch_id" name="batch_id" value="{{ staged.batch_id }}">
+                    <input type="hidden" id="form_type" name="form_type" value="note">
+                    <input type="hidden" id="row_index" name="row_index" value="{{ i }}">
+                    <input type="text" id="note{{ i }}" name="note" value="{{ d if d is not none else '' }}" tabindex='-1'>
+                </form>
+            </td>
+            {% else %}
+            <td>{{ d }}</td>
+            {% endif %}
+        {% endfor %}
+    </tr>
+    {% endfor %}
+</table>
+
+<form method="post" action="{{ url_for('staged_transactions_submit', batch_id=staged.batch_id) }}">
+    <button type="submit">Complete</button>
+</form>
+{% endblock %}

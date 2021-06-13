@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+
+{% block head %}
+<h1>Net Worth View</h1>
+{% endblock %}
+
+{% block body %}
+{# this isn't great, should refactor this into a Jinja template eventually: #}
+{{ pt.pivot_html|safe }}
+{% endblock %}

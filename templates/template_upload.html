@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+
+{% block head %}
+    <script src="{{ url_for('static', filename='js/jquery.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/chargeType.js') }}"></script>
+{% endblock %}
+
+{% block body %}
+{% for k,v in csv_files.items() %}
+<h3>{{ k }}</h3>
+{% if csv_files[k]['account'] == '-1' %}
+<form method="POST" name="template_info">
+    <input type="hidden" id="fileName" name="fileName" value="{{ k }}">
+    <input type="hidden" id="formType" name="formType" value="fileInfo">
+    {{ info_form.csrf_token }}
+    {{ info_form.account.label}}
+    {{ info_form.account }}
+    {{ info_form.template.label}}
+    {{ info_form.template }}
+    {{ info_form.has_headers.label}}
+    {{ info_form.has_headers }}
+    <input type="submit" value="Set File Info">
+</form>
+{% else %}
+<form action="{{ url_for('importStage') }}" method="POST" id="{{ k }}Stage" name="Stage">
+    <input type="hidden" id="fileName" name="fileName" value="{{ k }}">
+    <input type="submit" value="Stage">
+</form>
+{% endif %}
+<p>Total with input: {{ v['ldg_sum'] + v['import_sum'] }}</p>
+<table>
+    <tr>
+        {% for col in v['df'].columns.values %}
+        <th>{{col}}</th>
+        {% endfor %}
+    </tr>
+    {% for i, row in v['df'].iterrows() %}
+    <tr>
+        {# si is the index of the series #}
+        {% for si, d in row.iteritems() %}
+        {% if si == 'charge_type_id' %}
+        <td>
+            <form method="POST" name="chargeType">
+                <input type="hidden" id="fileName" name="fileName" value="{{ k }}">
+                <input type="hidden" id="formType" name="formType" value="chargeType">
+                <input type="hidden" id="rowIndex" name="rowIndex" value="{{ i }}">
+                {{ ct_form.csrf_token }}
+                {{ ct_form.chargeType(id= 'chargeType'+k ~i, default=d) }}
+            </form>
+        </td>
+        {% elif si == 'charge_category_id' %}
+        <td>
+            <form method="POST" name="chargeCategory">
+                <input type="hidden" id="fileName" name="fileName" value="{{ k }}">
+                <input type="hidden" id="formType" name="formType" value="chargeCategory">
+                <input type="hidden" id="rowIndex" name="rowIndex" value="{{ i }}">
+                {{ cc_form.csrf_token }}
+                {{ cc_form.chargeCategory(id= 'chargeCategory'+k ~i,  tabindex='-1') }}
+            </form>
+        </td>
+        {% elif si == 'charge_tracking_type_id' %}
+        <td>
+            <form method="POST" name="trackingType">
+                <input type="hidden" id="fileName" name="fileName" value="{{ k }}">
+                <input type="hidden" id="formType" name="formType" value="trackingType">
+                <input type="hidden" id="rowIndex" name="rowIndex" value="{{ i }}">
+                {{ tt_form.csrf_token }}
+                {{ tt_form.trackingType(id= 'trackingType'+k ~i, tabindex='-1') }}
+            </form>
+        </td>
+        {% else %}
+        <td>{{ d }}</td>
+        {% endif %}
+        {% endfor %}
+
+    </tr>
+    {% endfor %}
+</table>
+{% endfor %}
+{% endblock %}

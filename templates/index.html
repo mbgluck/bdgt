@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+
+
+{% block body %}
+
+<br><a href="{{url_for('transactions_view_home')}}">View Spending</a>
+<br><a href="{{url_for('nw_view')}}">View Net Worth</a>
+<br>
+<br><a href="{{url_for('nw_input')}}">Input Account Balances</a>
+<br><a href="{{url_for('stage_import_home')}}">Input Transactions</a>
+
+<p>Latest date and amount for each account:</p>
+<table>
+    <tr>
+        <th>Account</th>
+        <th>Latest Date</th>
+        <th>Amount</th>
+    </tr>
+    {% for acct, date, amt in latest_values %}
+    <tr>
+        <td>{{acct}}</td>
+        <td>{{date}}</td>
+        <td>{{amt}}</td>
+    </tr>
+    {% endfor %}
+</table>
+{% endblock %}

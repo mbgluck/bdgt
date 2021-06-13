@@ -1,0 +1,71 @@
+{% extends 'base.html' %}
+
+{# {% block head %}
+    <script src="{{ url_for('static', filename='js/jquery.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/StagedChange.js') }}"></script>
+{% endblock %} #}
+
+{% block body %}
+
+<table>
+    <tr>
+        {% for col in rec.columns.values %}
+        <th> {{ col }} </th>
+        {% endfor %}
+    </tr>
+    {% for i, row in rec.iterrows() %}
+    <tr>
+        {# si is the index of the series #}
+        
+        {% for si, d in row.iteritems() %}
+            {% if si == 'charge_type_id' %}
+            <td>
+                <form method="POST" name="charge_form" id={{ 'charge_form' ~i }}></form>
+                {% set x = ct.ct_test.process_data(d) %}
+                {{ ct.ct_test(id= 'ct' ~i, form='charge_form' ~i) }}
+            </td>
+            {% elif si == 'charge_category_id' %}
+            <td>
+                {{ ct.row_index(value=i, id='ri' ~i) }}
+                {% set x = ct.cc_test.process_data(d) %}
+                {{ ct.cc_test(id= 'cc' ~i, form='charge_form' ~i, tabindex='-1') }}
+                
+                {# <form method="POST" name="charge_category">
+
+                    <input type="hidden" id="form_type" name="form_type" value="charge_category">
+                    <input type="hidden" id="row_index" name="row_index" value="{{ i }}">
+                    {{ cc_form.csrf_token }}
+                    {% set x = cc_form.chargeCategory.process_data(d) %}
+                    {{ cc_form.chargeCategory(id= 'charge_category' ~i,  tabindex='-1') }}
+                </form> #}
+            </td>
+            {% elif si == 'charge_tracking_type_id' %}
+            <td>
+                {% set x = ct.tt_test.process_data(d) %}
+                {{ ct.tt_test(id= 'tt' ~i, form='charge_form' ~i, tabindex='-1') }}
+                {# <form method="POST" name="tracking_type">
+
+                    <input type="hidden" id="form_type" name="form_type" value="tracking_type">
+                    <input type="hidden" id="row_index" name="row_index" value="{{ i }}">
+                    {{ tt_form.csrf_token }}
+                    {% set x = tt_form.trackingType.process_data(d) %}
+                    {{ tt_form.trackingType(id= 'tracking_type' ~i, tabindex='-1') }}
+                </form> #}
+            </td>
+            {% elif si == 'note' %}
+            <td>
+                <form method="POST" name="note">
+                    <input type="hidden" id="form_type" name="form_type" value="note">
+                    <input type="hidden" id="row_index" name="row_index" value="{{ i }}">
+                    <input type="text" id="note{{ i }}" name="note" value="{{ d if d is not none else '' }}" tabindex='-1'>
+                </form>
+            </td>
+            {% else %}
+            <td>{{ d }}</td>
+            {% endif %}
+        {% endfor %}
+    </tr>
+    {% endfor %}
+</table>
+
+{% endblock %}

@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+
+{% block body %}
+
+<h1>{{ file_name }}</h1>
+{% if msg %}
+    <p>{{ msg }}</p><br>
+{% endif %}
+{# the file_info form #}
+<form method="POST" name="template_info" action="/import_transactions/stage">
+    <input type="hidden" id="fileName" name="fileName" value="{{ file_name }}">
+    <input type="hidden" id="formType" name="formType" value="file_info">
+    {{ file_info.csrf_token }}
+    {{ file_info.account.label}}
+    {{ file_info.account }}
+    {{ file_info.bankTemplate.label}}
+    {{ file_info.bankTemplate }}
+    {# {{ file_info.has_headers.label}}
+    {{ file_info.has_headers }} #}
+    <input type="submit" value="Set File Info">
+</form>
+
+{# the basic table structure - prints the dataframe as a table #}
+<table>
+    <tr>
+        {% for col in file_df.columns.values %}
+        <th>{{col}}</th>
+        {% endfor %}
+    </tr>
+    {% for i, row in file_df.iterrows() %}
+    <tr>
+        {# si is the index of the series #}
+        {% for si, d in row.iteritems() %}
+        {# the logic for the charge type, etc dropdowns goes in here #}
+        <td>{{ d }}</td>
+        {% endfor %}
+    </tr>
+    {% endfor %}
+</table>
+
+
+{% endblock %}

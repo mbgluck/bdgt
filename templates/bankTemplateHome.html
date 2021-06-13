@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+
+{% block head %}
+<script src="static/js/jquery.min.js"></script>
+<script src="static/js/bankTemplateFields.js"></script>
+{% endblock %}
+
+{% block body %}
+    <a href="{{url_for('templateNewTemp')}}">Create a New Template</a>
+    <!-- I want to see the list of curren templates -->
+    <!-- add borders to templates -->
+    <!-- ability to change templates -->
+    {% for t in bankTemplates %}
+        <h3> {{ t.name }} </h3>
+        <form>
+            <label for="institution{{t.id}}">Associated Institution:</label>
+            <select name="institution" id ="institution{{t.id}}">
+                {% for s in institutions %}
+                    {# institutions[0] is the id, and institutions [1] is the description #}
+                    <option value="{{s[0]}}" {% if s[0]== t.institution_id %} selected="selected" {% endif %}>{{ s[1] }}</option>
+                {% endfor %}
+            </select>
+            <p>Header rows: {{t.header_rows}}</p>
+        {# the add/delete column buttons #}
+        </form>
+            <form method="POST" name="addCol" action="/bankTemplates/addDelCol"> 
+                <input type="hidden" id="addCol{{t.id}}" name="AddOrDel" value="add">
+                <input type="hidden" id="addColTempId{{t.id}}" name="bankTemplateId" value="{{t.id}}">
+                <input type="submit" value="Add Column">
+            </form>
+            <form method="POST" name="delCol" action="/bankTemplates/addDelCol"> 
+                <input type="hidden" id="delCol{{t.id}}" name="AddOrDel" value="del">
+                <input type="hidden" id="delColTempId{{t.id}}" name="bankTemplateId" value="{{t.id}}">
+                <input type="submit" value="Remove Column">
+            </form>
+        <table border="1">
+            <tr>
+                {# find the length of the templateCols attribute and loop that many times #}
+                {% for c in range(t.templateCols|length) %}
+                    <th> {{ c }} </th>  
+                {% endfor %}    
+            </tr>
+            <tr>
+                {# find the length of the templateCols attribute and loop that many times, pulling the col value from the dictionary #}
+                {% for c in range(t.templateCols|length) %}
+                    {# make this a dropdown #}
+                    <td>
+                        <form method="POST" name="bankCol">
+                            {# on submission, want to pass back identifying information for which form, template ID and column index it references #}
+                            <input type="hidden" id="templateId{{t.id}}{{c}}" name="templateId" value="{{ t.id }}">
+                            <input type="hidden" id="templateCol{{t.id}}{{c}}" name="templateCol" value="{{ c }}">
+                            <input type="hidden" id="formType{{t.id}}{{c}}" name="formType" value="bankCol">
+                            <select name="bankCol" id ="bankCol{{t.id}}{{c}}">
+                                {# create all of the options in the dropdown #}
+                                {% for s in colList %}
+                                    {# pre-select the one that is the current value #}
+                                    <option value="{{ s }}" {% if s== t.templateCols[c] %} selected="selected" {% endif %}>{{ s }}</option>
+                                {% endfor %}
+                            </select>
+                    
+                        </form>
+                    </td>
+                {% endfor %}
+            </tr>
+        </table>    
+    {% endfor %}
+{% endblock %}

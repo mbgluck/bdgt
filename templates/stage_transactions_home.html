@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+
+
+{% block body %}
+
+<br><a href="{{url_for('uploadTransactionsFile')}}">Process and stage an uploaded file</a>
+<br><a href="{{url_for('templateMaint')}}">Upload Template Maintenance</a>
+{# <br><a href="{{url_for('uploadTransactionsFile')}}">Find an in-process upload</a> #}
+
+<h3>Curretly staged batches:</h3>
+
+<table>
+    <tr>
+    {% for h in header%}
+        <th>{{h}}</th>
+    {% endfor %}
+    <tr>
+    {% for row in table %}
+        <tr>
+            {% for d in row %}
+                {% if row.index(d) == 0 %}
+                    <td><a href="{{ url_for('staged_transactions', batch_id=d) }}">{{ d }}</a></td>
+                {% else %}
+                    <td>{{d}}</td>
+                {% endif %}
+            {% endfor %}
+        </tr>
+    {% endfor %}
+<table>
+
+</table>
+{% endblock %}

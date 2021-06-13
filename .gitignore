@@ -1,0 +1,9 @@
+Archive/
+static/csv_uploads/uploaded_csvs/
+static/csv_uploads/holding/
+worksheets
+__pycache__
+test.py
+setup.py
+env/
+.vscode/

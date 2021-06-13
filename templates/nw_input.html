@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+
+{% block body %}
+
+<h1>{{ file_name }}</h1>
+
+{# the file_info form #}
+<form method="POST" name="nw_input" action="/net_worth/input">
+    <label for="record_date">Date to record this entry:</label>
+    <input type="date" name="record_date" id="record_date" value="{{ today }}" required>
+    <table>
+    {% for a in accts %}
+        <tr>
+            {# a[0] is the ID, a[1] is the description, a[2] is currency #}
+            <td align="right"><label for="{{ a[0] }}">{{ a[1] }}</label></td>
+            <td align="right"><input type="number" name="{{ a[0] }}" id="{{ a[0] }}" autocomplete="off" step="0.01"></td>
+            <td align="left"><label for="{{ a[0] }}">{{ a[2] }}</label></td>
+            <td align="right"><label for="note{{ a[0] }}">note:</label></td>
+            <td align="left"><input type="text" name="note{{ a[0] }}" id="note{{ a[0] }}" maxlength=100 spellcheck="true"></td>
+        </tr>
+    {% endfor %}
+    </table>
+    <input type="submit" value="Upload Records">
+</form>
+
+{# no idea why this doesnt work: <script> function setDate() {document.getElementById('nw_input').valueAsDate = new Date().toDateInputValue();};</script> #}
+
+
+{% endblock %}

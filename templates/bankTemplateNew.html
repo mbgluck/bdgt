@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+
+{% block body %}
+    {% from "_formhelpers.html" import render_field %}
+    <form method=post>
+    <dl>
+        {{ render_field(form.name) }}
+        {{ render_field(form.institution_id) }}
+        {{ render_field(form.header_rows) }}
+    </dl>
+    <p>{{ render_field(form.submit) }}
+    </form>
+{% endblock %}
